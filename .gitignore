@@ -1,3 +1,6 @@
 data
 third_party
 submodules
+
+__pycache__
+.*/__pycache__
