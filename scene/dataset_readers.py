@@ -105,9 +105,11 @@ def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder, features_fo
         else:
             assert False, f"Colmap camera model {intr.model} not handled: only undistorted datasets (PINHOLE or SIMPLE_PINHOLE cameras) supported!"
 
-        image_path = os.path.join(images_folder, 'data', os.path.basename(extr.name))
-        
-        image_name = os.path.basename(image_path).split(".")[0]
+        image_path = os.path.join(images_folder, extr.name)
+        if fio.file_exist(image_path) == False:
+            continue
+        (tempDir, tempName, tempExt) = fio.get_filename_components(image_path)
+        image_name = tempName
         image = Image.open(image_path)
 
         features = torch.load(os.path.join(features_folder, image_name.split('.')[0] + ".pt")) if features_folder is not None else None
@@ -148,15 +150,16 @@ def storePly(path, xyz, rgb):
 
 def readColmapSceneInfo(path, images, eval, llffhold=8, need_features=False, need_masks=False, sample_rate = 1.0):
     try:
-        cameras_extrinsic_file = os.path.join(path, "sparse/0", "images.bin")
-        cameras_intrinsic_file = os.path.join(path, "sparse/0", "cameras.bin")
-        cam_extrinsics = read_extrinsics_binary(cameras_extrinsic_file)
-        cam_intrinsics = read_intrinsics_binary(cameras_intrinsic_file)
-    except:
         cameras_extrinsic_file = os.path.join(path, "sparse/0", "images.txt")
         cameras_intrinsic_file = os.path.join(path, "sparse/0", "cameras.txt")
         cam_extrinsics = read_extrinsics_text(cameras_extrinsic_file)
         cam_intrinsics = read_intrinsics_text(cameras_intrinsic_file)
+    except:
+        cameras_extrinsic_file = os.path.join(path, "sparse/0", "images.bin")
+        cameras_intrinsic_file = os.path.join(path, "sparse/0", "cameras.bin")
+        cam_extrinsics = read_extrinsics_binary(cameras_extrinsic_file)
+        cam_intrinsics = read_intrinsics_binary(cameras_intrinsic_file)
+        
 
     reading_dir = "images" if images == None else images
     feature_dir = "features"

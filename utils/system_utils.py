@@ -32,18 +32,19 @@ def mkdir_p(folder_path):
 # target: feature, seg, scene
 def searchForMaxIteration(folder, target = "scene"):
     fnames = os.listdir(folder)
-    saved_iters = []
-    for fname in fnames:
-        cur_dir = os.path.join(folder, fname)
-        plys = os.listdir(cur_dir)
-        has_target_ply = False
-        for p in plys:
-            if target in p:
-                has_target_ply = True
-                break
-        if has_target_ply:
-            saved_iters.append(int(fname.split("_")[-1]))
-    try:
-        return max(saved_iters)
-    except:
-        return None
+    max_value = max(int(x.split('_')[1]) for x in fnames)
+    return max_value
+    # for fname in fnames:
+    #     cur_dir = os.path.join(folder, fname)
+    #     plys = os.listdir(cur_dir)
+    #     has_target_ply = False
+    #     for p in plys:
+    #         if target in p:
+    #             has_target_ply = True
+    #             break
+    #     if has_target_ply:
+    #         saved_iters.append(int(fname.split("_")[-1]))
+    # try:
+    #     return max(saved_iters)
+    # except:
+    #     return None
