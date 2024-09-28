@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 import numpy as np
 from segment_anything import (SamAutomaticMaskGenerator, SamPredictor,
                               sam_model_registry)
+import root_file_io as fio
 
 if __name__ == '__main__':
     
@@ -16,7 +17,6 @@ if __name__ == '__main__':
     parser.add_argument("--sam_checkpoint_path", default="./dependencies/sam_ckpt/sam_vit_h_4b8939.pth", type=str)
     parser.add_argument("--sam_arch", default="vit_h", type=str)
     parser.add_argument("--downsample", default="1", type=str)
-    parser.add_argument("--image_dir", default='./data/360_v2/garden/images', type=str)
 
     args = parser.parse_args()
     
@@ -49,13 +49,20 @@ if __name__ == '__main__':
     assert os.path.exists(IMAGE_DIR) and "Please specify a valid image root"
     OUTPUT_DIR = os.path.join(args.image_root, 'sam_masks')
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-    IMAEG_DIR_REAL = args.image_dir
     
     print("Extracting SAM segment everything masks...")
-    for path in tqdm(os.listdir(IMAEG_DIR_REAL)):
-        name = path.split('.')[0]
-        img = cv2.imread(os.path.join(IMAEG_DIR_REAL, path))
+    image_seqs = fio.traverse_dir(IMAGE_DIR, full_path=True, towards_sub=False)
+    image_seqs = fio.filter_folder(image_seqs, filter_out=False, filter_text='seq')
+    image_paths = []
+    for seq_dir in image_seqs:
+        seq_image_paths = fio.traverse_dir(seq_dir, full_path=True, towards_sub=False)
+        seq_image_paths = fio.filter_ext(seq_image_paths, filter_out_target=False, ext_set=fio.img_ext_set)
+        image_paths += seq_image_paths
+
+    for path in tqdm(image_paths):
+        (tempdir, tempname, tempext) = fio.get_filename_components(path)
+        name = tempname
+        img = cv2.imread(path)
         masks = mask_generator.generate(img)
 
         mask_list = []
