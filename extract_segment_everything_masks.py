@@ -15,7 +15,8 @@ if __name__ == '__main__':
     parser.add_argument("--image_root", default='./data/360_v2/garden/', type=str)
     parser.add_argument("--sam_checkpoint_path", default="./dependencies/sam_ckpt/sam_vit_h_4b8939.pth", type=str)
     parser.add_argument("--sam_arch", default="vit_h", type=str)
-    parser.add_argument("--downsample", default="4", type=str)
+    parser.add_argument("--downsample", default="1", type=str)
+    parser.add_argument("--image_dir", default='./data/360_v2/garden/images', type=str)
 
     args = parser.parse_args()
     
@@ -48,11 +49,13 @@ if __name__ == '__main__':
     assert os.path.exists(IMAGE_DIR) and "Please specify a valid image root"
     OUTPUT_DIR = os.path.join(args.image_root, 'sam_masks')
     os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    IMAEG_DIR_REAL = args.image_dir
     
     print("Extracting SAM segment everything masks...")
-    for path in tqdm(os.listdir(IMAGE_DIR)):
+    for path in tqdm(os.listdir(IMAEG_DIR_REAL)):
         name = path.split('.')[0]
-        img = cv2.imread(os.path.join(IMAGE_DIR, path))
+        img = cv2.imread(os.path.join(IMAEG_DIR_REAL, path))
         masks = mask_generator.generate(img)
 
         mask_list = []
