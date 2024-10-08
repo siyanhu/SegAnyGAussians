@@ -31,14 +31,16 @@ if __name__ == '__main__':
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
     print("Extracting features...")
-    image_seqs = fio.traverse_dir(IMAGE_DIR, full_path=True, towards_sub=False)
-    image_seqs = fio.filter_folder(image_seqs, filter_out=False, filter_text='seq')
-    image_paths = []
-    for seq_dir in image_seqs:
-        seq_image_paths = fio.traverse_dir(seq_dir, full_path=True, towards_sub=False)
-        seq_image_paths = fio.filter_ext(seq_image_paths, filter_out_target=False, ext_set=fio.img_ext_set)
-        image_paths += seq_image_paths
-
+    # image_seqs = fio.traverse_dir(IMAGE_DIR, full_path=True, towards_sub=False)
+    # image_seqs = fio.filter_folder(image_seqs, filter_out=False, filter_text='seq')
+    # image_paths = []
+    # for seq_dir in image_seqs:
+    #     seq_image_paths = fio.traverse_dir(seq_dir, full_path=True, towards_sub=False)
+    #     seq_image_paths = fio.filter_ext(seq_image_paths, filter_out_target=False, ext_set=fio.img_ext_set)
+    #     image_paths += seq_image_paths
+    
+    image_paths = fio.traverse_dir(IMAGE_DIR, full_path=True, towards_sub=False)
+    image_paths = fio.filter_ext(image_paths, filter_out_target=False, ext_set=fio.img_ext_set)
     for path in tqdm(image_paths):
         (tempdir, tempname, tempext) = fio.get_filename_components(path)
         name = tempname

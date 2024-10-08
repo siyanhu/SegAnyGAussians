@@ -331,6 +331,38 @@ class GaussianModel:
 
         self.denom = self.denom[valid_points_mask]
         self.max_radii2D = self.max_radii2D[valid_points_mask]
+        
+    def segment_other_than(self, mask=None):
+        if mask is None:
+            mask = (self._mask > 0)
+        mask = mask.squeeze()
+        mask = ~mask
+        if self.optimizer is None:
+            self._xyz = self._xyz[mask]
+            self._mask = self._mask[mask]
+
+            self._features_dc = self._features_dc[mask]
+            self._features_rest = self._features_rest[mask]
+            self._opacity = self._opacity[mask]
+            self._scaling = self._scaling[mask]
+            self._rotation = self._rotation[mask]
+        else:
+            optimizable_tensors = self._prune_optimizer(mask)
+
+            self._xyz = optimizable_tensors["xyz"]
+
+            self._mask = optimizable_tensors["mask"]
+
+            self._features_dc = optimizable_tensors["f_dc"]
+            self._features_rest = optimizable_tensors["f_rest"]
+            self._opacity = optimizable_tensors["opacity"]
+            self._scaling = optimizable_tensors["scaling"]
+            self._rotation = optimizable_tensors["rotation"]
+
+            self.xyz_gradient_accum = self.xyz_gradient_accum[mask]
+
+            self.denom = self.denom[mask]
+        
 
     def segment(self, mask=None):
         if mask is None:

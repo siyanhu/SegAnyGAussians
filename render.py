@@ -82,11 +82,16 @@ def render_sets(dataset : ModelParams, iteration : int, pipeline : PipelineParam
 
         scene = Scene(dataset, gaussians, feature_gaussians, load_iteration=iteration, shuffle=False, mode='eval', target=target if precomputed_mask is None else 'scene')
 
-        if segment:
-            scene.save(scene.loaded_iter, target='scene_no_mask')
-            gaussians.segment(precomputed_mask)
-            gaussians.save_ply("/home/siyanhu/Gits/SegAnyGAussians/data/sub1/output_samtgs/segmentation/seg.ply", has_mask=True)
-            scene.save(scene.loaded_iter, target='seg_no_mask')
+        # if segment:
+        #     scene.save(scene.loaded_iter, target='scene_no_mask')
+        #     gaussians.segment(precomputed_mask)
+        #     gaussians.save_ply("/home/siyanhu/Gits/SegAnyGAussians/data/red1/output_samtgs/segmentation/seg_no_mask.ply", has_mask=False)
+        #     scene.save(scene.loaded_iter, target='seg_no_mask')
+            
+            # gaussians.segment_other_than(precomputed_mask)
+            # gaussians.save_ply("/home/siyanhu/Gits/SegAnyGAussians/data/red1/output_samtgs/segmentation/seg_other.ply", has_mask=False)
+            # exit()
+            
 
         bg_color = [1,1,1] if dataset.white_background else [0, 0, 0]
         if 'feature' in target:
